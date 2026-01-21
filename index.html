@@ -1,677 +1,350 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Precios Musicala 2025</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Comparador de Precios Musicala</title>
 
   <style>
-    body {
-      font-family: 'Roboto', Arial, sans-serif;
-      background-color: #F4F4F4;
-      margin: 0;
-      padding: 0;
-      color: #333;
-      line-height: 1.6;
+    body{
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      background:#f4f4f4;
+      margin:0;
+      padding:0;
+      color:#222;
     }
-
-    .header {
-      background: #3949AB;
-      color: white;
-      text-align: center;
-      padding: 20px;
+    header{
+      background:#3949ab;
+      color:white;
+      padding:20px;
+      text-align:center;
     }
-
-    .header h1 { margin: 0; }
-
-    .container {
-      max-width: 1000px;
-      margin: 20px auto;
-      padding: 20px;
-      background: white;
-      box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-      border-radius: 8px;
+    header h1{ margin:0 }
+    .container{
+      max-width:1100px;
+      margin:20px auto;
+      background:white;
+      padding:20px;
+      border-radius:10px;
+      box-shadow:0 10px 30px rgba(0,0,0,.1);
     }
-
-    .filter-container {
-      text-align: center;
-      margin-bottom: 12px;
-    }
-
-    .filter-container select {
-      padding: 10px;
-      font-size: 16px;
-      border: 1px solid #CCC;
-      border-radius: 5px;
-      width: 280px;
-    }
-
-    /* Buscador */
-    .search-wrap{
+    .controls{
       display:flex;
+      flex-wrap:wrap;
+      gap:12px;
       justify-content:center;
-      align-items:stretch;
-      gap:10px;
-      margin: 0 auto 14px;
-      max-width: 780px;
-      position: relative;
+      margin-bottom:15px;
     }
-    .search-wrap input{
-      flex:1;
-      padding: 12px 12px;
-      font-size: 16px;
-      border: 1px solid #CCC;
-      border-radius: 8px;
-      outline: none;
+    select, input{
+      padding:10px;
+      font-size:15px;
+      border-radius:8px;
+      border:1px solid #ccc;
+      min-width:240px;
     }
-    .search-wrap input:focus{
-      border-color:#1E88E5;
-      box-shadow: 0 0 0 3px rgba(30,136,229,.15);
+    input:focus, select:focus{
+      outline:none;
+      border-color:#3949ab;
+      box-shadow:0 0 0 3px rgba(57,73,171,.15);
     }
-    .search-actions{
-      display:flex;
-      gap:8px;
-      align-items:stretch;
+    .toggle-buttons button,
+    .btn-pagos{
+      padding:10px 18px;
+      font-size:15px;
+      font-weight:600;
+      border:none;
+      border-radius:8px;
+      cursor:pointer;
+      background:#3949ab;
+      color:white;
+      transition:.2s;
     }
-    .btn-clear{
-      padding: 10px 14px;
-      font-size: 14px;
-      font-weight: 700;
-      color: white;
-      background:#3949AB;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: background .2s;
-      white-space: nowrap;
-    }
-    .btn-clear:hover{ background:#1E88E5; }
+    .toggle-buttons button.active{ background:#1e88e5; }
+    .toggle-buttons button:hover{ background:#1e88e5; }
 
-    .suggestions{
-      position:absolute;
-      left:0;
-      right:0;
-      top: 46px;
-      background:#fff;
+    .btn-pagos{
+      background:#2e7d32;
+      text-decoration:none;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+    }
+    .btn-pagos:hover{
+      background:#1b5e20;
+      transform:translateY(-1px);
+    }
+    .chk{
+      display:flex;
+      align-items:center;
+      gap:6px;
+      font-size:14px;
+      background:#f6f6f6;
+      padding:8px 12px;
+      border-radius:999px;
       border:1px solid #ddd;
-      border-radius: 10px;
-      box-shadow: 0 10px 24px rgba(0,0,0,.10);
-      z-index: 20;
-      overflow:hidden;
-      display:none;
-      max-height: 260px;
-      overflow-y:auto;
+    }
+    table{
+      width:100%;
+      border-collapse:collapse;
+      margin-top:20px;
+    }
+    th, td{
+      border:1px solid #ddd;
+      padding:10px;
       text-align:left;
     }
-    .s-item{
-      padding: 10px 12px;
-      border-bottom:1px solid #f0f0f0;
-      cursor:pointer;
-      font-size: 14px;
-      line-height:1.35;
+    th{
+      background:#3949ab;
+      color:white;
     }
-    .s-item:last-child{ border-bottom:none; }
-    .s-item:hover{ background:#F3F6FF; }
-    .s-item strong{ color:#3949AB; }
-    .s-meta{
-      display:block;
-      color:#666;
-      font-size: 12px;
-      margin-top: 2px;
-    }
+    tr:nth-child(even){ background:#fafafa; }
+    tr:hover{ background:#e8eaf6; }
 
-    .toggle-row{
-      display:flex;
-      justify-content:center;
-      align-items:center;
-      gap:12px;
-      flex-wrap:wrap;
-      margin-bottom: 10px;
-    }
-
-    .toggle-buttons {
-      text-align: center;
-      margin-bottom: 0;
-    }
-
-    .toggle-buttons button {
-      padding: 10px 20px;
-      margin: 0 5px;
-      font-size: 16px;
-      font-weight: bold;
-      color: white;
-      background-color: #3949AB;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      transition: background 0.3s;
-    }
-
-    .toggle-buttons button.active { background-color: #1E88E5; }
-    .toggle-buttons button:hover { background-color: #1E88E5; }
-
-    .chk-wrap{
-      display:flex;
-      align-items:center;
-      gap:8px;
-      padding: 8px 12px;
-      border:1px solid #ddd;
-      border-radius: 999px;
-      background:#fafafa;
-      user-select:none;
-      font-size: 14px;
-    }
-    .chk-wrap input{ transform: scale(1.15); }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
-    }
-
-    th, td {
-      border: 1px solid #CCC;
-      padding: 12px;
-      text-align: left;
-    }
-
-    th {
-      background: #3949AB;
-      color: white;
-    }
-
-    tr:nth-child(even) { background: #F9F9F9; }
-    tr:hover { background: #DCE775; }
-
-    .logo {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      width: 100px;
-      height: auto;
-      z-index: 1000;
-      cursor: pointer;
-    }
-
-    .category-title {
-      font-size: 24px;
-      font-weight: bold;
-      color: #3949AB;
-      margin-top: 20px;
-      border-bottom: 2px solid #3949AB;
-      padding-bottom: 5px;
-    }
-
-    .footer {
-      text-align: center;
-      font-size: 14px;
-      color: #777;
-      margin-top: 30px;
-    }
-
-    .hidden { display: none; }
-
-    .status {
-      text-align: center;
-      margin: 10px 0 0;
-      font-size: 14px;
-      color: #555;
-    }
-    .status strong { color: #3949AB; }
-
-    .hint{
+    .muted{
+      color:#777;
+      font-size:13px;
       text-align:center;
-      font-size: 12px;
-      color:#666;
-      margin-top: 6px;
+      margin-top:8px;
+    }
+    .price{ font-weight:700; }
+    .empty{ color:#aaa; font-style:italic; }
+    .errorBox{
+      margin-top:12px;
+      padding:10px 12px;
+      border:1px solid #f3c6c6;
+      background:#fff5f5;
+      color:#9b1c1c;
+      border-radius:10px;
+      display:none;
+      white-space:pre-wrap;
+      font-size:13px;
     }
   </style>
 </head>
 
 <body>
-  <img class="logo"
-       src="https://static.wixstatic.com/media/85afce_3adb3865c88a492b93a8bf2dc69049c3~mv2.png"
-       alt="Logo Musicala">
 
-  <div class="header">
-    <h1>💵 Precios Musicala 2025</h1>
-    <p>Servicios en Sede, Hogar y Virtual</p>
+<header>
+  <h1>Comparador de Precios</h1>
+  <p>Musicala · 2025 vs 2026</p>
+</header>
+
+<div class="container">
+
+  <div class="controls">
+    <select id="categoryFilter">
+      <option value="">Todas las categorías</option>
+    </select>
+
+    <input id="searchInput" type="text" placeholder="Buscar servicio…" list="suggestions" />
+    <datalist id="suggestions"></datalist>
   </div>
 
-  <div class="container">
-    <!-- Buscador progresivo -->
-    <div class="search-wrap">
-      <input id="searchInput" type="text" placeholder="Buscar servicio… (ej: P8, Hogar, Musivacacional, Ensamble)">
-      <div class="search-actions">
-        <button class="btn-clear" id="btnClearSearch" type="button">Limpiar</button>
-      </div>
-      <div class="suggestions" id="suggestions"></div>
-    </div>
-    <div class="hint">Escribe y se filtra al vuelo. También puedes elegir una sugerencia.</div>
-
-    <!-- Filtro por categoría -->
-    <div class="filter-container">
-      <label for="categoryFilter">Filtrar por categoría:</label>
-      <select id="categoryFilter"></select>
+  <div class="controls">
+    <div class="toggle-buttons">
+      <button id="btn2025" class="active">2025</button>
+      <button id="btn2026">2026</button>
+      <a class="btn-pagos" href="https://musicala.github.io/registrodepagos2026/" target="_blank" rel="noopener">
+        Registro de pagos
+      </a>
     </div>
 
-    <!-- Toggle + checkbox intensivos -->
-    <div class="toggle-row">
-      <div class="toggle-buttons">
-        <button id="newStudentsBtn" class="active">Estudiantes Nuevos</button>
-        <button id="oldStudentsBtn">Antiguos/Convenios</button>
-      </div>
+    <label class="chk">
+      <input type="checkbox" id="chkAntiguos" checked>
+      Antiguos / Convenios
+    </label>
 
-      <label class="chk-wrap" title="Muestra solo intensivos, agrupados en la categoría principal">
-        <input type="checkbox" id="chkIntensivos">
-        Mostrar intensivos
-      </label>
-    </div>
+    <label class="chk">
+      <input type="checkbox" id="chkNuevos" checked>
+      Estudiantes nuevos
+    </label>
 
-    <div id="status" class="status">Cargando precios desde Sheets (TSV)…</div>
-
-    <div id="tablesRoot"></div>
+    <label class="chk">
+      <input type="checkbox" id="chkIntensivos">
+      Intensivos
+    </label>
   </div>
 
-  <div class="footer">
-    © Musicala 2025. Todos los derechos reservados.
-  </div>
+  <table>
+    <thead>
+      <tr>
+        <th>Categoría</th>
+        <th>Tipo</th>
+        <th>Servicio</th>
+        <th id="priceHeader">Precio 2025</th>
+      </tr>
+    </thead>
+    <tbody id="tbody"></tbody>
+  </table>
 
-  <script>
-    /***********************
-     * CONFIG
-     ***********************/
-    const TSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRw8VZmjjgmjRSeriTc2ITE1VtuwDtxCMntos5N8kljm0svs5nMe-nb07vJSx2L6vRo9iT_S7CCIEZe/pub?gid=1700804701&single=true&output=tsv";
+  <div class="muted" id="metaInfo"></div>
+  <div class="errorBox" id="errorBox"></div>
 
-    // Encabezados esperados (exactos)
-    const COLS = ["Categoria", "TipoEstudiante", "Servicio", "Precio", "Horas"];
+</div>
 
-    const TYPE_MAP = {
-      new: "Estudiantes Nuevos",
-      old: "Antiguos/Convenios"
-    };
+<script>
+  // ✅ TSV publicado
+  const TSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRw8VZmjjgmjRSeriTc2ITE1VtuwDtxCMntos5N8kljm0svs5nMe-nb07vJSx2L6vRo9iT_S7CCIEZe/pub?gid=1700804701&single=true&output=tsv";
 
-    /***********************
-     * STATE
-     ***********************/
-    let rows = [];
-    let categories = [];
-    let currentType = "new";
-    let showIntensivosOnly = false;
-    let query = "";
+  // Columnas por posición (0-based):
+  // A=0 Categoria | B=1 TipoEstudiante | C=2 Servicio | D=3 Precio 2025 | E=4 Precio 2026
+  const COL = { cat:0, tipo:1, serv:2, p2025:3, p2026:4 };
 
-    /***********************
-     * DOM helpers
-     ***********************/
-    const $ = (id) => document.getElementById(id);
+  let DATA = [];
+  let YEAR = "2025"; // "2025" o "2026"
 
-    function setStatus(msg, isError=false){
-      const el = $("status");
-      el.innerHTML = isError ? `<strong>Error:</strong> ${msg}` : msg;
-      el.style.color = isError ? "#b00020" : "#555";
+  const qs = (s) => document.querySelector(s);
+
+  boot();
+
+  async function boot(){
+    try{
+      const res = await fetch(TSV_URL, { cache: "no-store" });
+      if(!res.ok) throw new Error("HTTP " + res.status + " al cargar TSV");
+      const txt = await res.text();
+
+      const lines = txt.replace(/\r/g,"").trim().split("\n");
+      if(lines.length < 2) throw new Error("TSV vacío o sin filas suficientes.");
+
+      // Primer fila: headers (no confiamos en nombres, solo en posiciones)
+      const headers = lines.shift().split("\t").map(s => (s || "").trim());
+
+      // Parse filas por posiciones
+      DATA = lines.map(line=>{
+        const cols = line.split("\t");
+        return {
+          Categoria: (cols[COL.cat]  || "").trim(),
+          TipoEstudiante: (cols[COL.tipo] || "").trim(),
+          Servicio: (cols[COL.serv] || "").trim(),
+          Precio2025: (cols[COL.p2025] || "").trim(),
+          Precio2026: (cols[COL.p2026] || "").trim(),
+        };
+      }).filter(r => r.Categoria || r.TipoEstudiante || r.Servicio); // limpia basura
+
+      qs("#metaInfo").textContent =
+        `Cargadas ${DATA.length} filas. Columnas detectadas (por posición): A/B/C/D/E.`;
+
+      populateCategories();
+      populateSuggestions();
+      render();
+
+    }catch(err){
+      showError("Error cargando datos:\n" + (err?.message || err));
+      console.error(err);
     }
+  }
 
-    function escapeHTML(str){
-      return String(str ?? "")
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
-    }
+  function showError(msg){
+    const box = qs("#errorBox");
+    box.style.display = "block";
+    box.textContent = msg;
+  }
 
-    function idSafe(str){
-      return String(str).replace(/[^\w\-]+/g, "_");
-    }
+  function populateCategories(){
+    const sel = qs("#categoryFilter");
+    // limpia options excepto el primero
+    sel.querySelectorAll("option:not(:first-child)").forEach(o=>o.remove());
 
-    function norm(s){
-      return String(s ?? "")
-        .toLowerCase()
-        .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // quita tildes
-        .trim();
-    }
+    const cats = [...new Set(DATA.map(d => d.Categoria).filter(Boolean))].sort();
+    cats.forEach(c=>{
+      const o = document.createElement("option");
+      o.value = c;
+      o.textContent = c;
+      sel.appendChild(o);
+    });
+  }
 
-    /***********************
-     * Intensivos: helpers
-     ***********************/
-    function isIntensivoCategory(cat){
-      return norm(cat).includes("intensivo");
-    }
+  function populateSuggestions(){
+    const dl = qs("#suggestions");
+    dl.innerHTML = "";
 
-    function baseCategory(cat){
-      // "Grupal Intensivo" => "Grupal"
-      // "Personalizado intensivo" => "Personalizado"
-      return String(cat ?? "").replace(/intensivo/ig, "").replace(/\s+/g, " ").trim();
-    }
+    // top 200 servicios únicos para no reventar el DOM
+    const services = [...new Set(DATA.map(d => d.Servicio).filter(Boolean))].slice(0,200);
+    services.forEach(s=>{
+      const o=document.createElement("option");
+      o.value=s;
+      dl.appendChild(o);
+    });
+  }
 
-    function effectiveCategory(cat){
-      // Si estamos en modo intensivos, agrupamos en categoría base
-      return showIntensivosOnly ? baseCategory(cat) : cat;
-    }
+  function render(){
+    const tbody = qs("#tbody");
+    tbody.innerHTML = "";
 
-    /***********************
-     * TSV parsing
-     ***********************/
-    function parseTSV(tsv){
-      const lines = tsv.replace(/\r/g, "").split("\n").filter(Boolean);
-      if(lines.length < 2) return { headers: [], data: [] };
+    const cat = qs("#categoryFilter").value;
+    const q = qs("#searchInput").value.toLowerCase();
+    const showAnt = qs("#chkAntiguos").checked;
+    const showNew = qs("#chkNuevos").checked;
+    const showInt = qs("#chkIntensivos").checked;
 
-      const headers = lines[0].split("\t").map(h => h.trim());
-      const data = lines.slice(1).map(line => line.split("\t"));
+    qs("#priceHeader").textContent = "Precio " + YEAR;
 
-      return { headers, data };
-    }
+    const rows = DATA.filter(d=>{
+      if(cat && d.Categoria !== cat) return false;
 
-    function indexMap(headers){
-      const map = {};
-      headers.forEach((h, i) => map[h] = i);
-      return map;
-    }
-
-    async function loadTSV(){
-      try{
-        const res = await fetch(TSV_URL, { cache: "no-store" });
-        if(!res.ok) throw new Error(`HTTP ${res.status}`);
-        const text = await res.text();
-
-        const { headers, data } = parseTSV(text);
-        const idx = indexMap(headers);
-
-        const missing = COLS.filter(c => !(c in idx));
-        if(missing.length){
-          throw new Error(`Faltan columnas en la hoja: ${missing.join(", ")}. Encabezados esperados: ${COLS.join(" | ")}`);
-        }
-
-        rows = data.map(cols => {
-          const v = (name) => (cols[idx[name]] ?? "").trim();
-          return {
-            Categoria: v("Categoria"),
-            TipoEstudiante: v("TipoEstudiante"),
-            Servicio: v("Servicio"),
-            Precio: v("Precio"),
-            Horas: v("Horas")
-          };
-        }).filter(r => r.Categoria && r.TipoEstudiante && r.Servicio);
-
-        initUI();
-        recomputeCategories();
-        renderAll();
-        setStatus("Listo. ✅");
-      } catch(err){
-        console.error(err);
-        setStatus(
-          `${escapeHTML(err.message)}<br><br>` +
-          `Revisa encabezados exactos: <strong>${COLS.join(" | ")}</strong>.`,
-          true
-        );
+      if(q){
+        const hay = (d.Servicio || "").toLowerCase();
+        if(!hay.includes(q)) return false;
       }
-    }
 
-    /***********************
-     * UI init
-     ***********************/
-    function initUI(){
-      // Toggle buttons
-      $("newStudentsBtn").addEventListener("click", () => setType("new"));
-      $("oldStudentsBtn").addEventListener("click", () => setType("old"));
+      const tipo = d.TipoEstudiante || "";
+      if(!showAnt && tipo.toLowerCase().includes("antiguos")) return false;
+      if(!showNew && tipo.toLowerCase().includes("nuevos")) return false;
 
-      // Checkbox intensivos
-      $("chkIntensivos").addEventListener("change", (e) => {
-        showIntensivosOnly = !!e.target.checked;
-        recomputeCategories();
-        renderAll();
-      });
+      const serv = (d.Servicio || "").toLowerCase();
+      const esInt = serv.includes("intensivo");
+      if(!showInt && esInt) return false;
 
-      // Search
-      const input = $("searchInput");
-      const sug = $("suggestions");
+      return true;
+    });
 
-      input.addEventListener("input", () => {
-        query = input.value.trim();
-        updateSuggestions();
-        renderAll();
-      });
+    rows.forEach(d=>{
+      const tr = document.createElement("tr");
+      const price = (YEAR === "2025") ? d.Precio2025 : d.Precio2026;
 
-      input.addEventListener("focus", () => {
-        updateSuggestions();
-      });
-
-      document.addEventListener("click", (ev) => {
-        // cerrar sugerencias si clic afuera
-        if(!sug.contains(ev.target) && ev.target !== input){
-          sug.style.display = "none";
-        }
-      });
-
-      $("btnClearSearch").addEventListener("click", () => {
-        input.value = "";
-        query = "";
-        $("suggestions").style.display = "none";
-        renderAll();
-      });
-
-      // Dropdown categoría
-      $("categoryFilter").addEventListener("change", filterCategory);
-    }
-
-    function setType(type){
-      currentType = type;
-      $("newStudentsBtn").classList.toggle("active", type === "new");
-      $("oldStudentsBtn").classList.toggle("active", type === "old");
-      updateSuggestions();
-      renderAll();
-    }
-
-    function recomputeCategories(){
-      // Filtramos filas según modo intensivos:
-      // - Si showIntensivosOnly => solo filas cuya categoria incluye "Intensivo"
-      // - Si NO => excluimos las categorias intensivas para no llenar de chorrero
-      const pool = rows.filter(r => {
-        const isInt = isIntensivoCategory(r.Categoria);
-        return showIntensivosOnly ? isInt : !isInt;
-      });
-
-      categories = Array.from(new Set(pool.map(r => effectiveCategory(r.Categoria))))
-        .sort((a,b) => a.localeCompare(b, "es"));
-
-      // Rebuild dropdown
-      const sel = $("categoryFilter");
-      const current = sel.value || "all";
-      sel.innerHTML = `
-        <option value="all">Todas las categorías</option>
-        ${categories.map(cat => `<option value="${escapeHTML(cat)}">${escapeHTML(cat)}</option>`).join("")}
+      tr.innerHTML = `
+        <td>${escapeHtml(d.Categoria)}</td>
+        <td>${escapeHtml(d.TipoEstudiante)}</td>
+        <td>${escapeHtml(d.Servicio)}</td>
+        <td class="price">${price ? escapeHtml(price) : "<span class='empty'>—</span>"}</td>
       `;
+      tbody.appendChild(tr);
+    });
 
-      // Mantener selección si existe
-      if ([...sel.options].some(o => o.value === current)) sel.value = current;
-      else sel.value = "all";
-
-      // Rebuild table containers
-      $("tablesRoot").innerHTML = categories.map(cat => `<div id="${idSafe(cat)}Table"></div>`).join("");
+    if(rows.length === 0){
+      const tr=document.createElement("tr");
+      tr.innerHTML = `<td colspan="4" class="empty">Sin resultados con esos filtros.</td>`;
+      tbody.appendChild(tr);
     }
+  }
 
-    /***********************
-     * Search: suggestions + matching
-     ***********************/
-    function getVisiblePool(){
-      const typeLabel = TYPE_MAP[currentType];
+  function escapeHtml(str){
+    return (str ?? "")
+      .replaceAll("&","&amp;")
+      .replaceAll("<","&lt;")
+      .replaceAll(">","&gt;")
+      .replaceAll('"',"&quot;")
+      .replaceAll("'","&#039;");
+  }
 
-      return rows.filter(r => {
-        // Tipo
-        if (r.TipoEstudiante !== typeLabel) return false;
+  // eventos
+  ["categoryFilter","searchInput","chkAntiguos","chkNuevos","chkIntensivos"]
+    .forEach(id => qs("#"+id).addEventListener("input", render));
 
-        // Intensivos mode
-        const isInt = isIntensivoCategory(r.Categoria);
-        if (showIntensivosOnly && !isInt) return false;
-        if (!showIntensivosOnly && isInt) return false;
+  qs("#btn2025").addEventListener("click", ()=>{
+    YEAR="2025";
+    qs("#btn2025").classList.add("active");
+    qs("#btn2026").classList.remove("active");
+    render();
+  });
 
-        return true;
-      });
-    }
+  qs("#btn2026").addEventListener("click", ()=>{
+    YEAR="2026";
+    qs("#btn2026").classList.add("active");
+    qs("#btn2025").classList.remove("active");
+    render();
+  });
+</script>
 
-    function matchesQuery(r){
-      if(!query) return true;
-      const q = norm(query);
-      const hay = norm(`${r.Servicio} ${effectiveCategory(r.Categoria)} ${r.Precio} ${r.Horas}`);
-      return hay.includes(q);
-    }
-
-    function highlightMatch(text, qRaw){
-      const t = String(text ?? "");
-      const q = qRaw.trim();
-      if(!q) return escapeHTML(t);
-
-      // highlighting sencillo (sin volverse loco con tildes)
-      const i = norm(t).indexOf(norm(q));
-      if(i < 0) return escapeHTML(t);
-
-      // aproximación: partimos por longitud del query
-      const before = t.slice(0, i);
-      const mid = t.slice(i, i + q.length);
-      const after = t.slice(i + q.length);
-
-      return `${escapeHTML(before)}<strong>${escapeHTML(mid)}</strong>${escapeHTML(after)}`;
-    }
-
-    function updateSuggestions(){
-      const sug = $("suggestions");
-      const q = query.trim();
-
-      if(!q){
-        sug.style.display = "none";
-        sug.innerHTML = "";
-        return;
-      }
-
-      const pool = getVisiblePool();
-
-      // rank simple: primero los que empiezan por query, luego contiene
-      const qn = norm(q);
-      const scored = pool.map(r => {
-        const s = norm(r.Servicio);
-        let score = 999;
-        if (s.startsWith(qn)) score = 0;
-        else if (s.includes(qn)) score = 1;
-        else if (norm(effectiveCategory(r.Categoria)).includes(qn)) score = 2;
-        else score = 3;
-        return { r, score };
-      }).filter(x => x.score < 3);
-
-      scored.sort((a,b) => a.score - b.score || a.r.Servicio.localeCompare(b.r.Servicio, "es"));
-
-      const top = scored.slice(0, 10);
-      if(!top.length){
-        sug.style.display = "none";
-        sug.innerHTML = "";
-        return;
-      }
-
-      sug.innerHTML = top.map(({r}) => {
-        const cat = effectiveCategory(r.Categoria);
-        const label = `${r.Servicio}`;
-        const meta = `${cat} • ${r.Precio}${r.Horas ? " • " + r.Horas : ""}`;
-        return `
-          <div class="s-item" data-serv="${escapeHTML(r.Servicio)}">
-            ${highlightMatch(label, q)}
-            <span class="s-meta">${escapeHTML(meta)}</span>
-          </div>
-        `;
-      }).join("");
-
-      sug.style.display = "block";
-
-      // click en sugerencia => set input
-      [...sug.querySelectorAll(".s-item")].forEach(el => {
-        el.addEventListener("click", () => {
-          const serv = el.getAttribute("data-serv") || "";
-          $("searchInput").value = serv;
-          query = serv;
-          sug.style.display = "none";
-          renderAll();
-        });
-      });
-    }
-
-    /***********************
-     * Render
-     ***********************/
-    function renderAll(){
-      const pool = getVisiblePool();
-
-      // Render por categoría (ya “efectiva” si intensivos está activo)
-      categories.forEach(cat => {
-        const containerId = `${idSafe(cat)}Table`;
-
-        const data = pool
-          .filter(r => effectiveCategory(r.Categoria) === cat)
-          .filter(matchesQuery);
-
-        renderTable(containerId, cat, data);
-      });
-
-      filterCategory();
-
-      // Mensajito si el search dejó todo vacío
-      if(query){
-        const any = categories.some(cat => {
-          const el = $(idSafe(cat) + "Table");
-          return el && !el.classList.contains("hidden") && el.querySelector("table");
-        });
-        if(!any){
-          setStatus(`No hay resultados para: <strong>${escapeHTML(query)}</strong> 😶‍🌫️`, false);
-        } else {
-          setStatus("Listo. ✅");
-        }
-      } else {
-        setStatus("Listo. ✅");
-      }
-    }
-
-    function filterCategory(){
-      const filter = $("categoryFilter").value;
-      categories.forEach(cat => {
-        const id = `${idSafe(cat)}Table`;
-        $(id).classList.toggle("hidden", filter !== "all" && filter !== cat);
-      });
-    }
-
-    function renderTable(containerId, categoryName, data){
-      const container = $(containerId);
-
-      if(!data.length){
-        container.innerHTML = `
-          <h2 class="category-title">${escapeHTML(categoryName)}</h2>
-          <div class="status">No hay precios que coincidan con lo que estás filtrando.</div>
-        `;
-        return;
-      }
-
-      const showHours = data.some(x => x.Horas && x.Horas.trim() !== "");
-
-      container.innerHTML = `
-        <h2 class="category-title">${escapeHTML(categoryName)}</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>Servicio</th>
-              ${showHours ? "<th>Horas</th>" : ""}
-              <th>Precio</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${data.map(item => `
-              <tr>
-                <td>${escapeHTML(item.Servicio)}</td>
-                ${showHours ? `<td>${escapeHTML(item.Horas)}</td>` : ""}
-                <td>${escapeHTML(item.Precio)}</td>
-              </tr>
-            `).join("")}
-          </tbody>
-        </table>
-      `;
-    }
-
-    window.addEventListener("load", loadTSV);
-  </script>
 </body>
 </html>
