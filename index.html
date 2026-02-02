@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Comparador de Precios Musicala</title>
+  <title>Precios Musicala 2026</title>
 
   <style>
     body{
@@ -20,6 +20,8 @@
       text-align:center;
     }
     header h1{ margin:0 }
+    header p{ margin:6px 0 0; opacity:.95; }
+
     .container{
       max-width:1100px;
       margin:20px auto;
@@ -41,38 +43,63 @@
       border-radius:8px;
       border:1px solid #ccc;
       min-width:240px;
+      background:#fff;
     }
     input:focus, select:focus{
       outline:none;
       border-color:#3949ab;
       box-shadow:0 0 0 3px rgba(57,73,171,.15);
     }
-    .toggle-buttons button,
-    .btn-pagos{
+
+    .toggle-buttons{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      justify-content:center;
+      align-items:center;
+    }
+
+    .pill{
       padding:10px 18px;
       font-size:15px;
-      font-weight:600;
+      font-weight:700;
       border:none;
-      border-radius:8px;
-      cursor:pointer;
-      background:#3949ab;
+      border-radius:999px;
+      background:#1e88e5;
       color:white;
-      transition:.2s;
+      user-select:none;
     }
-    .toggle-buttons button.active{ background:#1e88e5; }
-    .toggle-buttons button:hover{ background:#1e88e5; }
 
-    .btn-pagos{
-      background:#2e7d32;
+    .btn{
+      padding:10px 18px;
+      font-size:15px;
+      font-weight:700;
+      border:none;
+      border-radius:999px;
+      cursor:pointer;
+      color:white;
       text-decoration:none;
       display:inline-flex;
       align-items:center;
       justify-content:center;
+      transition:.2s;
+      box-shadow:0 6px 16px rgba(0,0,0,.12);
+      white-space:nowrap;
     }
-    .btn-pagos:hover{
-      background:#1b5e20;
+    .btn:hover{
       transform:translateY(-1px);
+      box-shadow:0 10px 22px rgba(0,0,0,.16);
     }
+
+    .btn-pagos{ background:#2e7d32; }
+    .btn-pagos:hover{ background:#1b5e20; }
+
+    .btn-rip{ background:#6a1b9a; }
+    .btn-rip:hover{ background:#4a148c; }
+
+    .btn-galeria{ background:#1565c0; }
+    .btn-galeria:hover{ background:#0d47a1; }
+
     .chk{
       display:flex;
       align-items:center;
@@ -83,6 +110,7 @@
       border-radius:999px;
       border:1px solid #ddd;
     }
+
     table{
       width:100%;
       border-collapse:collapse;
@@ -106,7 +134,7 @@
       text-align:center;
       margin-top:8px;
     }
-    .price{ font-weight:700; }
+    .price{ font-weight:800; }
     .empty{ color:#aaa; font-style:italic; }
     .errorBox{
       margin-top:12px;
@@ -119,14 +147,83 @@
       white-space:pre-wrap;
       font-size:13px;
     }
+
+    /* =========================
+       Galería embebida
+    ========================== */
+    .gallery-wrap{
+      margin-top:18px;
+      border:1px solid #e5e5e5;
+      border-radius:12px;
+      overflow:hidden;
+      background:#fff;
+      box-shadow:0 10px 24px rgba(0,0,0,.06);
+    }
+    .gallery-head{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      justify-content:space-between;
+      padding:12px 14px;
+      background:linear-gradient(180deg, #f7f9ff, #ffffff);
+      border-bottom:1px solid #eee;
+    }
+    .gallery-head .title{
+      font-weight:800;
+      color:#18224a;
+    }
+    .gallery-head .sub{
+      font-size:12px;
+      color:#667;
+      margin-top:2px;
+    }
+    .gallery-actions{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+    .btn-mini{
+      padding:8px 12px;
+      font-size:13px;
+      font-weight:800;
+      border-radius:999px;
+      border:1px solid rgba(0,0,0,.08);
+      background:#fff;
+      cursor:pointer;
+      transition:.2s;
+      text-decoration:none;
+      color:#223;
+      box-shadow:0 6px 14px rgba(0,0,0,.06);
+    }
+    .btn-mini:hover{
+      transform:translateY(-1px);
+      box-shadow:0 10px 20px rgba(0,0,0,.10);
+      border-color:rgba(0,0,0,.14);
+    }
+    .gallery-iframe{
+      width:100%;
+      height:min(78vh, 980px);
+      border:0;
+      background:#fff;
+      display:block;
+    }
+    .hidden{ display:none !important; }
+
+    @media (max-width: 560px){
+      select, input{ min-width: 100%; }
+      .gallery-head{ flex-direction:column; align-items:flex-start; }
+      .gallery-actions{ width:100%; justify-content:flex-start; }
+      .gallery-iframe{ height: 78vh; }
+    }
   </style>
 </head>
 
 <body>
 
 <header>
-  <h1>Comparador de Precios</h1>
-  <p>Musicala · 2025 vs 2026</p>
+  <h1>Precios Musicala</h1>
+  <p>Musicala · 2026</p>
 </header>
 
 <div class="container">
@@ -142,11 +239,19 @@
 
   <div class="controls">
     <div class="toggle-buttons">
-      <button id="btn2025" class="active">2025</button>
-      <button id="btn2026">2026</button>
-      <a class="btn-pagos" href="https://musicala.github.io/registrodepagos2026/" target="_blank" rel="noopener">
+      <span class="pill">2026</span>
+
+      <a class="btn btn-pagos" href="https://musicala.github.io/registrodepagos2026/" target="_blank" rel="noopener">
         Registro de pagos
       </a>
+
+      <a class="btn btn-rip" href="https://musicala.github.io/RIP2026/" target="_blank" rel="noopener">
+        RIP 2026
+      </a>
+
+      <button class="btn btn-galeria" id="btnToggleGaleria" type="button">
+        Galería (imágenes)
+      </button>
     </div>
 
     <label class="chk">
@@ -171,7 +276,7 @@
         <th>Categoría</th>
         <th>Tipo</th>
         <th>Servicio</th>
-        <th id="priceHeader">Precio 2025</th>
+        <th id="priceHeader">Precio 2026</th>
       </tr>
     </thead>
     <tbody id="tbody"></tbody>
@@ -180,6 +285,35 @@
   <div class="muted" id="metaInfo"></div>
   <div class="errorBox" id="errorBox"></div>
 
+  <!-- =========================
+       GALERÍA EMBEBIDA
+       (Se abre/cierra con botón)
+  ========================== -->
+  <section class="gallery-wrap hidden" id="galleryWrap" aria-label="Galería de precios (imágenes)">
+    <div class="gallery-head">
+      <div>
+        <div class="title">Galería de precios (imágenes)</div>
+        <div class="sub">Vista rápida en formato imagen, embebida desde tu galería.</div>
+      </div>
+
+      <div class="gallery-actions">
+        <a class="btn-mini" href="https://alekcaballero20.github.io/preciosgaleria/" target="_blank" rel="noopener">
+          Abrir en pestaña nueva
+        </a>
+        <button class="btn-mini" type="button" id="btnCerrarGaleria">Cerrar</button>
+      </div>
+    </div>
+
+    <iframe
+      class="gallery-iframe"
+      id="galleryIframe"
+      src="https://alekcaballero20.github.io/preciosgaleria/"
+      title="Galería de precios Musicala"
+      loading="lazy"
+      referrerpolicy="no-referrer">
+    </iframe>
+  </section>
+
 </div>
 
 <script>
@@ -187,15 +321,15 @@
   const TSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRw8VZmjjgmjRSeriTc2ITE1VtuwDtxCMntos5N8kljm0svs5nMe-nb07vJSx2L6vRo9iT_S7CCIEZe/pub?gid=1700804701&single=true&output=tsv";
 
   // Columnas por posición (0-based):
-  // A=0 Categoria | B=1 TipoEstudiante | C=2 Servicio | D=3 Precio 2025 | E=4 Precio 2026
-  const COL = { cat:0, tipo:1, serv:2, p2025:3, p2026:4 };
+  // A=0 Categoria | B=1 TipoEstudiante | C=2 Servicio | E=4 Precio 2026
+  const COL = { cat:0, tipo:1, serv:2, p2026:4 };
 
   let DATA = [];
-  let YEAR = "2025"; // "2025" o "2026"
 
   const qs = (s) => document.querySelector(s);
 
   boot();
+  initGallery();
 
   async function boot(){
     try{
@@ -207,7 +341,7 @@
       if(lines.length < 2) throw new Error("TSV vacío o sin filas suficientes.");
 
       // Primer fila: headers (no confiamos en nombres, solo en posiciones)
-      const headers = lines.shift().split("\t").map(s => (s || "").trim());
+      lines.shift();
 
       // Parse filas por posiciones
       DATA = lines.map(line=>{
@@ -216,13 +350,12 @@
           Categoria: (cols[COL.cat]  || "").trim(),
           TipoEstudiante: (cols[COL.tipo] || "").trim(),
           Servicio: (cols[COL.serv] || "").trim(),
-          Precio2025: (cols[COL.p2025] || "").trim(),
           Precio2026: (cols[COL.p2026] || "").trim(),
         };
       }).filter(r => r.Categoria || r.TipoEstudiante || r.Servicio); // limpia basura
 
       qs("#metaInfo").textContent =
-        `Cargadas ${DATA.length} filas. Columnas detectadas (por posición): A/B/C/D/E.`;
+        `Cargadas ${DATA.length} filas. Columnas detectadas (por posición): A/B/C/E.`;
 
       populateCategories();
       populateSuggestions();
@@ -242,7 +375,6 @@
 
   function populateCategories(){
     const sel = qs("#categoryFilter");
-    // limpia options excepto el primero
     sel.querySelectorAll("option:not(:first-child)").forEach(o=>o.remove());
 
     const cats = [...new Set(DATA.map(d => d.Categoria).filter(Boolean))].sort();
@@ -258,7 +390,6 @@
     const dl = qs("#suggestions");
     dl.innerHTML = "";
 
-    // top 200 servicios únicos para no reventar el DOM
     const services = [...new Set(DATA.map(d => d.Servicio).filter(Boolean))].slice(0,200);
     services.forEach(s=>{
       const o=document.createElement("option");
@@ -277,7 +408,7 @@
     const showNew = qs("#chkNuevos").checked;
     const showInt = qs("#chkIntensivos").checked;
 
-    qs("#priceHeader").textContent = "Precio " + YEAR;
+    qs("#priceHeader").textContent = "Precio 2026";
 
     const rows = DATA.filter(d=>{
       if(cat && d.Categoria !== cat) return false;
@@ -300,7 +431,7 @@
 
     rows.forEach(d=>{
       const tr = document.createElement("tr");
-      const price = (YEAR === "2025") ? d.Precio2025 : d.Precio2026;
+      const price = d.Precio2026;
 
       tr.innerHTML = `
         <td>${escapeHtml(d.Categoria)}</td>
@@ -327,23 +458,38 @@
       .replaceAll("'","&#039;");
   }
 
-  // eventos
+  // eventos de filtros
   ["categoryFilter","searchInput","chkAntiguos","chkNuevos","chkIntensivos"]
     .forEach(id => qs("#"+id).addEventListener("input", render));
 
-  qs("#btn2025").addEventListener("click", ()=>{
-    YEAR="2025";
-    qs("#btn2025").classList.add("active");
-    qs("#btn2026").classList.remove("active");
-    render();
-  });
+  /* =========================
+     Galería: abrir/cerrar
+  ========================== */
+  function initGallery(){
+    const wrap = qs("#galleryWrap");
+    const btn = qs("#btnToggleGaleria");
+    const btnClose = qs("#btnCerrarGaleria");
 
-  qs("#btn2026").addEventListener("click", ()=>{
-    YEAR="2026";
-    qs("#btn2026").classList.add("active");
-    qs("#btn2025").classList.remove("active");
-    render();
-  });
+    btn.addEventListener("click", ()=>{
+      const isHidden = wrap.classList.contains("hidden");
+      wrap.classList.toggle("hidden");
+
+      // Si se abre, baja suave hacia la galería
+      if(isHidden){
+        setTimeout(()=> wrap.scrollIntoView({ behavior:"smooth", block:"start" }), 50);
+        btn.textContent = "Ocultar galería";
+      }else{
+        btn.textContent = "Galería (imágenes)";
+      }
+    });
+
+    btnClose.addEventListener("click", ()=>{
+      wrap.classList.add("hidden");
+      btn.textContent = "Galería (imágenes)";
+      // vuelve arriba un poquito para que no se sienta raro
+      setTimeout(()=> window.scrollTo({ top: 0, behavior:"smooth" }), 50);
+    });
+  }
 </script>
 
 </body>
