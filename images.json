@@ -1,0 +1,36 @@
+{
+  "general": [
+    { "src": "./gallery/general/metodos-de-pago-logo.png", "title": "Métodos de pago (logo)", "meta": "Siempre visible" },
+    { "src": "./gallery/general/metodos-de-pago.png", "title": "Métodos de pago", "meta": "Siempre visible" },
+    { "src": "./gallery/general/parqueaderos.jpeg", "title": "Parqueaderos", "meta": "Siempre visible" },
+    { "src": "./gallery/general/ubicacion.jpeg", "title": "Ubicación", "meta": "Siempre visible" }
+  ],
+
+  "nuevos": [
+    { "src": "./gallery/nuevos/estudiantes-nuevos-personalizadas.png", "title": "Estudiantes nuevos · Personalizado", "categoria": "Personalizado", "meta": "Estudiantes nuevos" },
+
+    { "src": "./gallery/nuevos/musifamiliar-sede-grupal.png", "title": "Estudiantes nuevos · Musifamiliar Sede Grupal", "categoria": "Musifamiliar Grupal", "meta": "Estudiantes nuevos" },
+
+    { "src": "./gallery/nuevos/nuevos-hogar.png", "title": "Estudiantes nuevos · Hogar Personalizado", "categoria": "Hogar", "meta": "Estudiantes nuevos" },
+
+    { "src": "./gallery/nuevos/musifamiliar-hogar-grupal.png", "title": "Estudiantes nuevos · Hogar Musifamiliar Grupal", "categoria": "Hogar G", "meta": "Estudiantes nuevos" },
+
+    { "src": "./gallery/nuevos/nuevos-virtual.png", "title": "Estudiantes nuevos · Virtual Personalizado", "categoria": "Virtual", "meta": "Estudiantes nuevos" },
+
+    { "src": "./gallery/convenios/beneficio-grupales.png", "title": "Estudiantes nuevos · Sede Grupal", "categoria": "Grupal", "meta": "Estudiantes nuevos" }
+  ],
+
+  "convenios": [
+    { "src": "./gallery/convenios/beneficios-personalizadas.png", "title": "Beneficios / Convenios · Personalizado", "categoria": "Personalizado", "meta": "Beneficios / Convenios" },
+
+    { "src": "./gallery/convenios/musifamiliar-sede-grupal.png", "title": "Beneficios / Convenios · Musifamiliar Sede Grupal", "categoria": "Musifamiliar Grupal", "meta": "Beneficios / Convenios" },
+
+    { "src": "./gallery/convenios/beneficio-grupales.png", "title": "Beneficios / Convenios · Sede Grupal", "categoria": "Grupal", "meta": "Beneficios / Convenios" },
+
+    { "src": "./gallery/convenios/beneficios-hogar.png", "title": "Beneficios / Convenios · Hogar Personalizado", "categoria": "Hogar", "meta": "Beneficios / Convenios" },
+
+    { "src": "./gallery/convenios/beneficios-musifamiliar-hogar.png", "title": "Beneficios / Convenios · Hogar Musifamiliar Grupal", "categoria": "Hogar G", "meta": "Beneficios / Convenios" },
+
+    { "src": "./gallery/convenios/beneficios-clases-virtuales.png", "title": "Beneficios / Convenios · Virtual", "categoria": "Virtual", "meta": "Beneficios / Convenios" }
+  ]
+}
