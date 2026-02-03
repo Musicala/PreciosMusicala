@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Precios Musicala 2026</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+
+<body>
+<header class="site-header">
+  <h1>Precios Musicala</h1>
+  <p>Musicala · 2026</p>
+</header>
+
+<main class="container">
+
+  <section class="controls">
+    <select id="categoryFilter">
+      <option value="">Todas las categorías</option>
+    </select>
+
+    <input id="searchInput" type="text" placeholder="Buscar servicio…" list="suggestions" />
+    <datalist id="suggestions"></datalist>
+  </section>
+
+  <section class="controls">
+    <div class="toggle-buttons">
+      <span class="pill">2026</span>
+
+      <a class="btn btn-pagos" href="https://musicala.github.io/registrodepagos2026/" target="_blank" rel="noopener">
+        Registro de pagos
+      </a>
+
+      <a class="btn btn-rip" href="https://musicala.github.io/RIP2026/" target="_blank" rel="noopener">
+        RIP 2026
+      </a>
+
+      <button class="btn btn-galeria" id="btnToggleGaleria" type="button">
+        Galería (imágenes)
+      </button>
+    </div>
+
+    <!-- ✅ Default: Estudiantes nuevos (checked) -->
+    <label class="chk">
+      <input type="checkbox" id="chkNuevos" checked>
+      Estudiantes nuevos
+    </label>
+
+    <!-- Renombrado "Antiguos" -> Beneficios / Convenios -->
+    <label class="chk">
+      <input type="checkbox" id="chkConvenios">
+      Beneficios / Convenios
+    </label>
+  </section>
+
+  <section class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Categoría</th>
+          <th>Servicio</th>
+          <th id="priceHeader">Precio (selección)</th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+
+    <div class="muted" id="metaInfo"></div>
+    <div class="errorBox" id="errorBox"></div>
+  </section>
+
+  <!-- Galería filtrable (local) -->
+  <section class="gallery-wrap hidden" id="galleryWrap" aria-label="Galería de precios (imágenes)">
+    <div class="gallery-head">
+      <div>
+        <div class="title">Galería de precios (imágenes)</div>
+        <div class="sub">Muestra imágenes locales según categoría + selección (Nuevos / Convenios). Las “generales” siempre salen primero.</div>
+      </div>
+      <div class="gallery-actions">
+        <a class="btn-mini" href="./gallery/" target="_blank" rel="noopener">Abrir carpeta</a>
+        <button class="btn-mini" type="button" id="btnCerrarGaleria">Cerrar</button>
+      </div>
+    </div>
+
+    <div class="gallery-grid" id="galleryGrid"></div>
+    <div class="gallery-empty muted hidden" id="galleryEmpty">Sin imágenes para esos filtros.</div>
+  </section>
+
+</main>
+
+<script src="./app.js" defer></script>
+</body>
+</html>
