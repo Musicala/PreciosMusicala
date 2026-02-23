@@ -19,7 +19,7 @@
 
     { "src": "./gallery/convenios/beneficio-grupales.png", "title": "Estudiantes nuevos · Sede Grupal", "categoria": "Grupal", "meta": "Estudiantes nuevos" },
 
-    { "src": "./gallery/nuevos/Talleres empresariales.png", "title": "Estudiantes nuevos · Talleres empresariales", "categoria": "Grupal", "meta": "Estudiantes nuevos" }
+    { "src": "./gallery/nuevos/Talleres empresariales.png", "title": "Estudiantes nuevos · Taller empresarial", "categoria": "Grupal", "meta": "Estudiantes nuevos" }
   ],
 
   "convenios": [
