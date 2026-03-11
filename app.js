@@ -14,6 +14,11 @@
  *    - gallery/general -> siempre primero
  *    - gallery/nuevos -> por servicio / categoría
  *    - gallery/convenios -> por servicio / categoría
+ * ✅ Descuentos visuales en tabla:
+ *    - Normal
+ *    - 10%
+ *    - 15%
+ *    - 20%
  */
 
 const TSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRw8VZmjjgmjRSeriTc2ITE1VtuwDtxCMntos5N8kljm0svs5nMe-nb07vJSx2L6vRo9iT_S7CCIEZe/pub?gid=1700804701&single=true&output=tsv";
@@ -22,6 +27,7 @@ const IMAGES_JSON_URL = "./images.json";
 let DATA = [];
 let COLS = null;
 let IMG = { general: [], nuevos: [], convenios: [] };
+let SELECTED_DISCOUNT = 0;
 
 const qs = (s) => document.querySelector(s);
 
@@ -45,7 +51,7 @@ async function boot(){
     const lines = txt.replace(/\r/g,"").trim().split("\n");
     if(lines.length < 2) throw new Error("TSV vacío o sin filas suficientes.");
 
-    const headers = lines.shift().split("\t").map(h => (h||"").trim());
+    const headers = lines.shift().split("\t").map(h => (h || "").trim());
     COLS = detectColumns(headers);
 
     const missing = [];
@@ -63,10 +69,10 @@ async function boot(){
     }
 
     // Parse rows en el orden del Excel
-    DATA = lines.map((line, idx)=>{
+    DATA = lines.map((line, idx) => {
       const cols = line.split("\t");
       return {
-        __row: idx + 2, // por si quieres debug (fila de sheet aprox)
+        __row: idx + 2, // debug aproximado de fila
         Categoria: pick(cols, COLS.cat),
         Servicio: pick(cols, COLS.serv),
         PrecioNuevos: pick(cols, COLS.pNuevos),
@@ -74,9 +80,7 @@ async function boot(){
       };
     }).filter(r => r.Categoria || r.Servicio || r.PrecioNuevos || r.PrecioConvenios);
 
-    qs("#metaInfo").textContent =
-      `Cargadas ${DATA.length} filas. cat=${COLS.cat} · serv=${COLS.serv} · nuevos=${COLS.pNuevos} · convenios=${COLS.pConv}`;
-
+    updateMetaInfo();
     populateCategories();
     populateSuggestions();
     renderAll();
@@ -93,7 +97,6 @@ async function loadImagesJson(){
     if(!r.ok) return { general: [], nuevos: [], convenios: [] };
     const j = await r.json();
 
-    // Normalizamos a listas (ordenables)
     return {
       general: Array.isArray(j.general) ? j.general : [],
       nuevos: Array.isArray(j.nuevos) ? j.nuevos : [],
@@ -112,7 +115,7 @@ function detectColumns(headers){
 
   const findAny = (needles) => {
     const ns = needles.map(normalize);
-    for(let i=0;i<norm.length;i++){
+    for(let i = 0; i < norm.length; i++){
       const h = norm[i];
       for(const n of ns){
         if(n && h.includes(n)) return i;
@@ -123,9 +126,16 @@ function detectColumns(headers){
 
   const cat = findAny(["categoria", "categoría"]);
   const serv = findAny(["servicio", "paquete", "nombre", "item"]);
-
   const pNuevos = findAny(["estudiantes nuevos", "nuevos", "precio nuevos", "valor nuevos"]);
-  const pConv = findAny(["beneficio/convenios", "beneficios/convenios", "beneficio convenios", "convenios", "beneficios", "precio convenios", "valor convenios"]);
+  const pConv = findAny([
+    "beneficio/convenios",
+    "beneficios/convenios",
+    "beneficio convenios",
+    "convenios",
+    "beneficios",
+    "precio convenios",
+    "valor convenios"
+  ]);
 
   return { cat, serv, pNuevos, pConv };
 }
@@ -149,20 +159,34 @@ function pick(cols, idx){
 ========================= */
 function showError(msg){
   const box = qs("#errorBox");
+  if(!box) return;
   box.style.display = "block";
   box.textContent = msg;
 }
 
+function updateMetaInfo(){
+  const meta = qs("#metaInfo");
+  if(!meta || !COLS) return;
+
+  const extra = SELECTED_DISCOUNT > 0
+    ? ` · descuento=${SELECTED_DISCOUNT}%`
+    : "";
+
+  meta.textContent =
+    `Cargadas ${DATA.length} filas. cat=${COLS.cat} · serv=${COLS.serv} · nuevos=${COLS.pNuevos} · convenios=${COLS.pConv}${extra}`;
+}
+
 function populateCategories(){
   const sel = qs("#categoryFilter");
-  sel.querySelectorAll("option:not(:first-child)").forEach(o=>o.remove());
+  if(!sel) return;
 
-  // 👇 Respetar orden del Excel: primera vez que aparezca cada categoría
+  sel.querySelectorAll("option:not(:first-child)").forEach(o => o.remove());
+
+  // Respetar orden del Excel: primera aparición de cada categoría
   const seen = new Set();
   for(const r of DATA){
     const c = (r.Categoria || "").trim();
-    if(!c) continue;
-    if(seen.has(c)) continue;
+    if(!c || seen.has(c)) continue;
     seen.add(c);
 
     const o = document.createElement("option");
@@ -174,13 +198,14 @@ function populateCategories(){
 
 function populateSuggestions(){
   const dl = qs("#suggestions");
+  if(!dl) return;
+
   dl.innerHTML = "";
 
   const seen = new Set();
   for(const r of DATA){
     const s = (r.Servicio || "").trim();
-    if(!s) continue;
-    if(seen.has(s)) continue;
+    if(!s || seen.has(s)) continue;
     seen.add(s);
 
     const o = document.createElement("option");
@@ -193,7 +218,27 @@ function populateSuggestions(){
 
 function bindEvents(){
   ["categoryFilter","searchInput","chkNuevos","chkConvenios"]
-    .forEach(id => qs("#"+id).addEventListener("input", renderAll));
+    .forEach(id => {
+      const el = qs("#" + id);
+      if(el) el.addEventListener("input", renderAll);
+    });
+
+  const discountWrap = qs("#discountButtons");
+  if(discountWrap){
+    discountWrap.addEventListener("click", (e) => {
+      const btn = e.target.closest(".discount-btn");
+      if(!btn) return;
+
+      SELECTED_DISCOUNT = Number(btn.dataset.discount || 0);
+
+      discountWrap.querySelectorAll(".discount-btn").forEach(b => {
+        b.classList.toggle("active", b === btn);
+      });
+
+      updateMetaInfo();
+      renderAll();
+    });
+  }
 }
 
 /* =========================
@@ -201,23 +246,21 @@ function bindEvents(){
 ========================= */
 function getState(){
   return {
-    selectedCat: qs("#categoryFilter").value,
-    q: (qs("#searchInput").value || "").toLowerCase(),
-    showNuevos: qs("#chkNuevos").checked,
-    showConvenios: qs("#chkConvenios").checked,
+    selectedCat: qs("#categoryFilter")?.value || "",
+    q: (qs("#searchInput")?.value || "").toLowerCase(),
+    showNuevos: !!qs("#chkNuevos")?.checked,
+    showConvenios: !!qs("#chkConvenios")?.checked,
   };
 }
 
 function applyFilters(rows, st){
-  return rows.filter(d=>{
+  return rows.filter(d => {
     const cat = (d.Categoria || "").trim();
     const serv = (d.Servicio || "").trim();
 
     if(st.selectedCat && cat !== st.selectedCat) return false;
 
-    if(st.q){
-      if(!serv.toLowerCase().includes(st.q)) return false;
-    }
+    if(st.q && !serv.toLowerCase().includes(st.q)) return false;
 
     // Si no hay ningún toggle seleccionado, no mostramos nada
     if(!st.showNuevos && !st.showConvenios) return false;
@@ -226,21 +269,113 @@ function applyFilters(rows, st){
   });
 }
 
-function getDisplayPrice(row, st){
-  // Si ambos están activos, mostramos "Nuevos / Convenios"
-  if(st.showNuevos && st.showConvenios){
-    const a = row.PrecioNuevos || "—";
-    const b = row.PrecioConvenios || "—";
-    return `${a} / ${b}`;
-  }
-  if(st.showNuevos) return row.PrecioNuevos || "";
-  return row.PrecioConvenios || "";
-}
-
 function getActiveMode(st){
-  // Para galería: si ambos ON, priorizamos "nuevos" (como default de ustedes)
+  // Para galería: si ambos ON, priorizamos "nuevos"
   if(st.showNuevos) return "nuevos";
   return "convenios";
+}
+
+/* =========================
+   Price helpers
+========================= */
+function parsePriceNumber(value){
+  if(value == null) return null;
+
+  let s = String(value).trim();
+  if(!s) return null;
+
+  // Elimina moneda, espacios y caracteres raros
+  s = s.replace(/[^\d,.-]/g, "");
+  if(!s) return null;
+
+  const hasComma = s.includes(",");
+  const hasDot = s.includes(".");
+
+  if(hasComma && hasDot){
+    // Si la coma aparece después del punto, asumimos decimal con coma: 1.234,56
+    if(s.lastIndexOf(",") > s.lastIndexOf(".")){
+      s = s.replace(/\./g, "").replace(",", ".");
+    } else {
+      // Asumimos decimal con punto: 1,234.56
+      s = s.replace(/,/g, "");
+    }
+  } else if(hasComma){
+    const parts = s.split(",");
+    if(parts.length === 2 && parts[1].length <= 2){
+      // decimal tipo 1234,56
+      s = parts[0].replace(/\./g, "") + "." + parts[1];
+    } else {
+      // comas como miles
+      s = s.replace(/,/g, "");
+    }
+  } else if(hasDot){
+    const parts = s.split(".");
+    if(parts.length > 2){
+      // puntos como miles
+      s = parts.join("");
+    } else if(parts.length === 2 && parts[1].length === 3){
+      // 120.000
+      s = parts.join("");
+    }
+  }
+
+  const n = Number(s);
+  return Number.isFinite(n) ? n : null;
+}
+
+function formatCOP(value){
+  if(value == null || !Number.isFinite(value)) return "—";
+  return new Intl.NumberFormat("es-CO", {
+    style: "currency",
+    currency: "COP",
+    maximumFractionDigits: 0
+  }).format(Math.round(value));
+}
+
+function applyDiscount(value, discount){
+  const n = parsePriceNumber(value);
+  if(n == null) return null;
+  return n * (1 - discount / 100);
+}
+
+function renderPriceBlock(originalValue){
+  if(!originalValue) return `<span class="empty">—</span>`;
+
+  const originalNumber = parsePriceNumber(originalValue);
+  if(originalNumber == null){
+    return escapeHtml(originalValue);
+  }
+
+  const finalValue = applyDiscount(originalValue, SELECTED_DISCOUNT);
+
+  if(SELECTED_DISCOUNT <= 0){
+    return `<span class="price-final">${formatCOP(finalValue)}</span>`;
+  }
+
+  return `
+    <div class="price-wrap">
+      <span class="price-old">${formatCOP(originalNumber)}</span>
+      <span class="price-final">${formatCOP(finalValue)}</span>
+      <span class="price-badge">-${SELECTED_DISCOUNT}%</span>
+    </div>
+  `;
+}
+
+function getDisplayPriceHtml(row, st){
+  if(st.showNuevos && st.showConvenios){
+    return `
+      <div class="price-wrap">
+        <div><strong>Nuevos:</strong> ${renderPriceBlock(row.PrecioNuevos)}</div>
+        <div><strong>Convenios:</strong> ${renderPriceBlock(row.PrecioConvenios)}</div>
+      </div>
+    `;
+  }
+
+  if(st.showNuevos){
+    return renderPriceBlock(row.PrecioNuevos);
+  }
+
+  return renderPriceBlock(row.PrecioConvenios);
 }
 
 /* =========================
@@ -250,9 +385,18 @@ function renderAll(){
   const st = getState();
   const filtered = applyFilters(DATA, st);
 
-  qs("#priceHeader").textContent = st.showNuevos
-    ? (st.showConvenios ? "Precio (Nuevos / Convenios)" : "Precio (Estudiantes nuevos)")
-    : "Precio (Beneficios / Convenios)";
+  const discountText = SELECTED_DISCOUNT > 0
+    ? ` · ${SELECTED_DISCOUNT}% OFF`
+    : "";
+
+  const priceHeader = qs("#priceHeader");
+  if(priceHeader){
+    priceHeader.textContent = st.showNuevos
+      ? (st.showConvenios
+          ? `Precio (Nuevos / Convenios${discountText})`
+          : `Precio (Estudiantes nuevos${discountText})`)
+      : `Precio (Beneficios / Convenios${discountText})`;
+  }
 
   renderTable(filtered, st);
   renderGallery(filtered, st);
@@ -263,16 +407,17 @@ function renderAll(){
 ========================= */
 function renderTable(rows, st){
   const tbody = qs("#tbody");
+  if(!tbody) return;
+
   tbody.innerHTML = "";
 
   if(rows.length === 0){
-    const tr=document.createElement("tr");
+    const tr = document.createElement("tr");
     tr.innerHTML = `<td colspan="3" class="empty">Sin resultados con esos filtros.</td>`;
     tbody.appendChild(tr);
     return;
   }
 
-  // 👇 Render secuencial, con “separador” cuando cambia la categoría
   let lastCat = null;
 
   for(const r of rows){
@@ -286,12 +431,13 @@ function renderTable(rows, st){
       lastCat = cat;
     }
 
-    const price = getDisplayPrice(r, st);
+    const priceHtml = getDisplayPriceHtml(r, st);
+
     const tr = document.createElement("tr");
     tr.innerHTML = `
       <td>${escapeHtml(r.Categoria || "")}</td>
       <td>${escapeHtml(r.Servicio || "")}</td>
-      <td class="price">${price ? escapeHtml(price) : "<span class='empty'>—</span>"}</td>
+      <td class="price">${priceHtml}</td>
     `;
     tbody.appendChild(tr);
   }
@@ -305,6 +451,7 @@ function renderGallery(rows, st){
   const grid = qs("#galleryGrid");
   const empty = qs("#galleryEmpty");
 
+  if(!wrap || !grid || !empty) return;
   if(wrap.classList.contains("hidden")) return;
 
   grid.innerHTML = "";
@@ -313,27 +460,21 @@ function renderGallery(rows, st){
   const mode = getActiveMode(st); // "nuevos" | "convenios"
   const list = (mode === "nuevos") ? (IMG.nuevos || []) : (IMG.convenios || []);
 
-  // 1) Generales siempre primero (orden del JSON)
+  // Generales siempre primero
   const general = (IMG.general || []).map(x => normalizeImgItem(x));
 
-  // 2) Servicios filtrados (orden del JSON, filtrado por categoría seleccionada)
-  //    La idea es: images.json ya tiene items con:
-  //    { src, title, categoria, servicioSlug }
   const selectedCat = (st.selectedCat || "").trim();
   const allowedServiceSlugs = new Set(rows.map(r => slug(r.Servicio)));
 
   const filteredByMode = list
     .map(x => normalizeImgItem(x))
     .filter(item => {
-      // si hay categoría seleccionada, solo esa
       if(selectedCat && item.categoria && item.categoria !== selectedCat) return false;
 
-      // si el item tiene servicioSlug, debe existir en los rows filtrados
       if(item.servicioSlug){
         return allowedServiceSlugs.has(item.servicioSlug);
       }
 
-      // si no tiene servicioSlug, lo dejamos pasar (sirve para “banner” de categoría)
       return true;
     });
 
@@ -359,17 +500,16 @@ function renderGallery(rows, st){
 }
 
 function normalizeImgItem(x){
-  // soporta:
-  // - string: "ruta.png"
-  // - objeto: { src, title, categoria, servicioSlug, meta }
   if(typeof x === "string"){
-    return { src: x, title: "Imagen", meta: "" };
+    return { src: x, title: "Imagen", categoria: "", servicioSlug: "", meta: "" };
   }
+
   const src = (x?.src || "").trim();
   const title = (x?.title || "Imagen").trim();
   const categoria = (x?.categoria || "").trim();
   const servicioSlug = (x?.servicioSlug || "").trim();
   const meta = (x?.meta || (categoria ? categoria : "")).trim();
+
   return { src, title, categoria, servicioSlug, meta };
 }
 
@@ -381,24 +521,28 @@ function initGalleryUi(){
   const btn = qs("#btnToggleGaleria");
   const btnClose = qs("#btnCerrarGaleria");
 
-  btn.addEventListener("click", ()=>{
-    const isHidden = wrap.classList.contains("hidden");
-    wrap.classList.toggle("hidden");
+  if(btn && wrap){
+    btn.addEventListener("click", () => {
+      const isHidden = wrap.classList.contains("hidden");
+      wrap.classList.toggle("hidden");
 
-    if(isHidden){
-      btn.textContent = "Ocultar galería";
-      renderAll();
-      setTimeout(()=> wrap.scrollIntoView({ behavior:"smooth", block:"start" }), 50);
-    }else{
+      if(isHidden){
+        btn.textContent = "Ocultar galería";
+        renderAll();
+        setTimeout(() => wrap.scrollIntoView({ behavior:"smooth", block:"start" }), 50);
+      }else{
+        btn.textContent = "Galería (imágenes)";
+      }
+    });
+  }
+
+  if(btnClose && wrap && btn){
+    btnClose.addEventListener("click", () => {
+      wrap.classList.add("hidden");
       btn.textContent = "Galería (imágenes)";
-    }
-  });
-
-  btnClose.addEventListener("click", ()=>{
-    wrap.classList.add("hidden");
-    btn.textContent = "Galería (imágenes)";
-    setTimeout(()=> window.scrollTo({ top: 0, behavior:"smooth" }), 50);
-  });
+      setTimeout(() => window.scrollTo({ top: 0, behavior:"smooth" }), 50);
+    });
+  }
 }
 
 /* =========================
@@ -407,19 +551,21 @@ function initGalleryUi(){
 function slug(s){
   return (s || "")
     .toLowerCase()
-    .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "");
 }
 
 function escapeHtml(str){
-  return (str ?? "")
-    .replaceAll("&","&amp;")
-    .replaceAll("<","&lt;")
-    .replaceAll(">","&gt;")
-    .replaceAll('"',"&quot;")
-    .replaceAll("'","&#039;");
+  return String(str ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
 }
+
 function escapeAttr(str){
-  return escapeHtml(str).replaceAll("`","&#096;");
+  return escapeHtml(str).replaceAll("`", "&#096;");
 }

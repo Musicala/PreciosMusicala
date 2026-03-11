@@ -17,9 +17,7 @@
 
     { "src": "./gallery/nuevos/nuevos-virtual.png", "title": "Estudiantes nuevos · Virtual Personalizado", "categoria": "Virtual", "meta": "Estudiantes nuevos" },
 
-    { "src": "./gallery/convenios/beneficio-grupales.png", "title": "Estudiantes nuevos · Sede Grupal", "categoria": "Grupal", "meta": "Estudiantes nuevos" },
-
-    { "src": "./gallery/nuevos/Talleres empresariales.png", "title": "Estudiantes nuevos · Taller empresarial", "categoria": "Grupal", "meta": "Estudiantes nuevos" }
+    { "src": "./gallery/convenios/beneficio-grupales.png", "title": "Estudiantes nuevos · Sede Grupal", "categoria": "Grupal", "meta": "Estudiantes nuevos" }
   ],
 
   "convenios": [

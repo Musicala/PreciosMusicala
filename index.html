@@ -52,6 +52,18 @@
       <input type="checkbox" id="chkConvenios">
       Beneficios / Convenios
     </label>
+
+    <!-- Selector de descuento -->
+    <div class="discount-bar" aria-label="Selector de descuento">
+      <span class="discount-label">Descuento:</span>
+
+      <div class="discount-buttons" id="discountButtons">
+        <button class="discount-btn active" type="button" data-discount="0">Normal</button>
+        <button class="discount-btn" type="button" data-discount="10">10%</button>
+        <button class="discount-btn" type="button" data-discount="15">15%</button>
+        <button class="discount-btn" type="button" data-discount="20">20%</button>
+      </div>
+    </div>
   </section>
 
   <section class="table-wrap">
@@ -75,7 +87,10 @@
     <div class="gallery-head">
       <div>
         <div class="title">Galería de precios (imágenes)</div>
-        <div class="sub">Muestra imágenes locales según categoría + selección (Nuevos / Convenios). Las “generales” siempre salen primero.</div>
+        <div class="sub">
+          Muestra imágenes locales según categoría + selección (Nuevos / Convenios). 
+          Las “generales” siempre salen primero.
+        </div>
       </div>
       <div class="gallery-actions">
         <a class="btn-mini" href="./gallery/" target="_blank" rel="noopener">Abrir carpeta</a>

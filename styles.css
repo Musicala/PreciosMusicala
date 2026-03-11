@@ -241,3 +241,156 @@ tr.cat-row td .badge{
 .g-price{ margin-top:8px; font-weight:950; color:#0b1020; }
 
 .hidden{ display:none !important; }
+.discount-bar{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  flex-wrap:wrap;
+  width:100%;
+  margin-top:4px;
+}
+
+.discount-label{
+  font-size:14px;
+  font-weight:900;
+  color:#223;
+}
+
+.discount-buttons{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  justify-content:center;
+}
+
+.discount-btn{
+  padding:9px 14px;
+  border:none;
+  border-radius:999px;
+  cursor:pointer;
+  font-size:14px;
+  font-weight:900;
+  background:#eef2ff;
+  color:#23326d;
+  box-shadow:0 6px 14px rgba(0,0,0,.08);
+  transition:.2s;
+}
+
+.discount-btn:hover{
+  transform:translateY(-1px);
+  box-shadow:0 10px 20px rgba(0,0,0,.12);
+}
+
+.discount-btn.active{
+  background:linear-gradient(135deg, var(--brand), var(--brand2));
+  color:#fff;
+}
+
+.price-wrap{
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+}
+
+.price-old{
+  font-size:12px;
+  color:#888;
+  text-decoration:line-through;
+  font-weight:700;
+}
+
+.price-final{
+  font-size:15px;
+  color:#111;
+  font-weight:950;
+}
+
+.price-badge{
+  display:inline-block;
+  margin-top:2px;
+  padding:2px 8px;
+  border-radius:999px;
+  font-size:11px;
+  font-weight:900;
+  background:rgba(46,125,50,.12);
+  color:#1b5e20;
+  border:1px solid rgba(46,125,50,.18);
+}
+
+.discount-bar{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  flex-wrap:wrap;
+  width:100%;
+  margin-top:4px;
+}
+
+.discount-label{
+  font-size:14px;
+  font-weight:900;
+  color:#223;
+}
+
+.discount-buttons{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  justify-content:center;
+}
+
+.discount-btn{
+  padding:9px 14px;
+  border:none;
+  border-radius:999px;
+  cursor:pointer;
+  font-size:14px;
+  font-weight:900;
+  background:#eef2ff;
+  color:#23326d;
+  box-shadow:0 6px 14px rgba(0,0,0,.08);
+  transition:.2s;
+}
+
+.discount-btn:hover{
+  transform:translateY(-1px);
+  box-shadow:0 10px 20px rgba(0,0,0,.12);
+}
+
+.discount-btn.active{
+  background:linear-gradient(135deg, var(--brand), var(--brand2));
+  color:#fff;
+}
+
+.price-wrap{
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+}
+
+.price-old{
+  font-size:12px;
+  color:#888;
+  text-decoration:line-through;
+  font-weight:700;
+}
+
+.price-final{
+  font-size:15px;
+  color:#111;
+  font-weight:950;
+}
+
+.price-badge{
+  display:inline-block;
+  margin-top:2px;
+  padding:2px 8px;
+  border-radius:999px;
+  font-size:11px;
+  font-weight:900;
+  background:rgba(46,125,50,.12);
+  color:#1b5e20;
+  border:1px solid rgba(46,125,50,.18);
+}
