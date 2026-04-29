@@ -1,106 +1,140 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Precios Musicala 2026</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./styles.css">
 </head>
 
 <body>
+
 <header class="site-header">
-  <h1>Precios Musicala</h1>
-  <p>Musicala · 2026</p>
+  <div class="header-inner">
+    <div class="header-brand">
+      <div class="brand-logo-wrap">
+        <img class="brand-logo" src="./logo.png" alt="Logo Musicala">
+      </div>
+      <div class="brand-copy">
+        <div class="brand-name">musicala</div>
+        <div class="brand-tagline">Lista de precios · 2026</div>
+        <div class="brand-subline">Formación musical para todos</div>
+      </div>
+    </div>
+    <div class="header-links">
+      <a class="hlink hlink-pagos" href="https://musicala.github.io/registrodepagos2026/" target="_blank" rel="noopener">
+        <span class="hlink-icon">📋</span> Registro de pagos
+      </a>
+      <a class="hlink hlink-rip" href="https://musicala.github.io/RIP2026/" target="_blank" rel="noopener">
+        <span class="hlink-icon">📁</span> RIP 2026
+      </a>
+    </div>
+  </div>
 </header>
 
 <main class="container">
 
-  <section class="controls">
-    <select id="categoryFilter">
-      <option value="">Todas las categorías</option>
-    </select>
+  <section class="filters-card">
+    <div class="filters-row">
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input id="searchInput" type="text" placeholder="Buscar servicio..." list="suggestions" autocomplete="off"/>
+        <datalist id="suggestions"></datalist>
+      </div>
+      <select id="categoryFilter">
+        <option value="">Todas las categorías</option>
+      </select>
+    </div>
 
-    <input id="searchInput" type="text" placeholder="Buscar servicio…" list="suggestions" />
-    <datalist id="suggestions"></datalist>
-  </section>
+    <div class="filters-row tipo-row">
+      <div class="tipo-group">
+        <span class="tipo-label">Tipo de estudiante</span>
+        <div class="tipo-toggles">
+          <label class="tipo-toggle" id="toggleNuevos">
+            <input type="checkbox" id="chkNuevos" checked>
+            <span class="toggle-pill">
+              <span class="toggle-dot"></span>
+              <span class="toggle-text">Estudiantes nuevos</span>
+            </span>
+          </label>
+          <label class="tipo-toggle" id="toggleConvenios">
+            <input type="checkbox" id="chkConvenios">
+            <span class="toggle-pill">
+              <span class="toggle-dot"></span>
+              <span class="toggle-text">Beneficios / Convenios</span>
+            </span>
+          </label>
+        </div>
+      </div>
 
-  <section class="controls">
-    <div class="toggle-buttons">
-      <span class="pill">2026</span>
-
-      <a class="btn btn-pagos" href="https://musicala.github.io/registrodepagos2026/" target="_blank" rel="noopener">
-        Registro de pagos
-      </a>
-
-      <a class="btn btn-rip" href="https://musicala.github.io/RIP2026/" target="_blank" rel="noopener">
-        RIP 2026
-      </a>
-
-      <button class="btn btn-galeria" id="btnToggleGaleria" type="button">
-        Galería (imágenes)
+      <button class="btn-galeria" id="btnToggleGaleria" type="button">
+        <span class="btn-galeria-icon">🖼️</span>
+        <span class="btn-galeria-text">Ver galería</span>
       </button>
     </div>
 
-    <!-- ✅ Default: Estudiantes nuevos (checked) -->
-    <label class="chk">
-      <input type="checkbox" id="chkNuevos" checked>
-      Estudiantes nuevos
-    </label>
-
-    <!-- Renombrado "Antiguos" -> Beneficios / Convenios -->
-    <label class="chk">
-      <input type="checkbox" id="chkConvenios">
-      Beneficios / Convenios
-    </label>
-
-    <!-- Selector de descuento -->
-    <div class="discount-bar" aria-label="Selector de descuento">
-      <span class="discount-label">Descuento:</span>
-
-      <div class="discount-buttons" id="discountButtons">
-        <button class="discount-btn active" type="button" data-discount="0">Normal</button>
-        <button class="discount-btn" type="button" data-discount="10">10%</button>
-        <button class="discount-btn" type="button" data-discount="15">15%</button>
-        <button class="discount-btn" type="button" data-discount="20">20%</button>
+    <div class="discount-section">
+      <span class="discount-title">
+        <span class="discount-icon">🏷️</span> Descuento
+      </span>
+      <div class="discount-pills" id="discountButtons">
+        <button class="dpill active" type="button" data-discount="0">Normal</button>
+        <button class="dpill" type="button" data-discount="5">5%</button>
+        <button class="dpill" type="button" data-discount="10">10%</button>
+        <button class="dpill" type="button" data-discount="15">15%</button>
+        <button class="dpill" type="button" data-discount="20">20%</button>
+      </div>
+      <div class="discount-custom-wrap">
+        <input
+          id="customDiscountInput"
+          type="number"
+          min="0"
+          max="100"
+          step="0.1"
+          placeholder="% propio"
+          inputmode="decimal"
+        />
       </div>
     </div>
   </section>
 
-  <section class="table-wrap">
-    <table>
-      <thead>
-        <tr>
-          <th>Categoría</th>
-          <th>Servicio</th>
-          <th id="priceHeader">Precio (selección)</th>
-        </tr>
-      </thead>
-      <tbody id="tbody"></tbody>
-    </table>
+  <div class="meta-bar" id="metaInfo"></div>
+  <div class="errorBox" id="errorBox"></div>
 
-    <div class="muted" id="metaInfo"></div>
-    <div class="errorBox" id="errorBox"></div>
-  </section>
+  <div class="content-layout" id="contentLayout">
+    <section class="table-section">
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th class="th-cat">Categoría</th>
+              <th class="th-serv">Servicio</th>
+              <th class="th-price" id="priceHeader">Precio</th>
+            </tr>
+          </thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+    </section>
 
-  <!-- Galería filtrable (local) -->
-  <section class="gallery-wrap hidden" id="galleryWrap" aria-label="Galería de precios (imágenes)">
-    <div class="gallery-head">
-      <div>
-        <div class="title">Galería de precios (imágenes)</div>
-        <div class="sub">
-          Muestra imágenes locales según categoría + selección (Nuevos / Convenios). 
-          Las “generales” siempre salen primero.
+    <section class="gallery-wrap hidden" id="galleryWrap" aria-label="Galería de precios">
+      <div class="gallery-head">
+        <div class="gallery-head-left">
+          <span class="gallery-title">🖼️ Galería de imágenes</span>
+          <span class="gallery-sub">Imágenes según categoría y tipo de estudiante seleccionado</span>
+        </div>
+        <div class="gallery-head-actions">
+          <a class="btn-mini" href="./gallery/" target="_blank" rel="noopener">Abrir carpeta</a>
+          <button class="btn-mini btn-mini-close" type="button" id="btnCerrarGaleria">✕ Cerrar</button>
         </div>
       </div>
-      <div class="gallery-actions">
-        <a class="btn-mini" href="./gallery/" target="_blank" rel="noopener">Abrir carpeta</a>
-        <button class="btn-mini" type="button" id="btnCerrarGaleria">Cerrar</button>
-      </div>
-    </div>
-
-    <div class="gallery-grid" id="galleryGrid"></div>
-    <div class="gallery-empty muted hidden" id="galleryEmpty">Sin imágenes para esos filtros.</div>
-  </section>
+      <div class="gallery-grid" id="galleryGrid"></div>
+      <div class="gallery-empty hidden" id="galleryEmpty">Sin imágenes para esos filtros.</div>
+    </section>
+  </div>
 
 </main>
 

@@ -226,12 +226,14 @@ function bindEvents(){
   const discountWrap = qs("#discountButtons");
   if(discountWrap){
     discountWrap.addEventListener("click", (e) => {
-      const btn = e.target.closest(".discount-btn");
+      const btn = e.target.closest(".dpill");
       if(!btn) return;
 
       SELECTED_DISCOUNT = Number(btn.dataset.discount || 0);
+      const customInput = qs("#customDiscountInput");
+      if(customInput) customInput.value = "";
 
-      discountWrap.querySelectorAll(".discount-btn").forEach(b => {
+      discountWrap.querySelectorAll(".dpill").forEach(b => {
         b.classList.toggle("active", b === btn);
       });
 
@@ -239,6 +241,39 @@ function bindEvents(){
       renderAll();
     });
   }
+
+  const customInput = qs("#customDiscountInput");
+  if(customInput){
+    customInput.addEventListener("input", () => {
+      const raw = customInput.value.trim();
+
+      if(!raw){
+        SELECTED_DISCOUNT = 0;
+        setActiveDiscountButton(0);
+        updateMetaInfo();
+        renderAll();
+        return;
+      }
+
+      const value = Number(raw.replace(",", "."));
+      if(!Number.isFinite(value)) return;
+
+      SELECTED_DISCOUNT = clamp(value, 0, 100);
+      setActiveDiscountButton(null);
+      updateMetaInfo();
+      renderAll();
+    });
+  }
+}
+
+function setActiveDiscountButton(discount){
+  const discountWrap = qs("#discountButtons");
+  if(!discountWrap) return;
+
+  discountWrap.querySelectorAll(".dpill").forEach((b) => {
+    const btnDiscount = Number(b.dataset.discount || 0);
+    b.classList.toggle("active", discount != null && btnDiscount === discount);
+  });
 }
 
 /* =========================
@@ -338,6 +373,10 @@ function applyDiscount(value, discount){
   return n * (1 - discount / 100);
 }
 
+function clamp(value, min, max){
+  return Math.min(max, Math.max(min, value));
+}
+
 function renderPriceBlock(originalValue){
   if(!originalValue) return `<span class="empty">—</span>`;
 
@@ -364,9 +403,15 @@ function renderPriceBlock(originalValue){
 function getDisplayPriceHtml(row, st){
   if(st.showNuevos && st.showConvenios){
     return `
-      <div class="price-wrap">
-        <div><strong>Nuevos:</strong> ${renderPriceBlock(row.PrecioNuevos)}</div>
-        <div><strong>Convenios:</strong> ${renderPriceBlock(row.PrecioConvenios)}</div>
+      <div class="dual-price">
+        <div class="dual-row">
+          <span class="dual-tag dual-tag-nuevos">Nuevos</span>
+          ${renderPriceBlock(row.PrecioNuevos)}
+        </div>
+        <div class="dual-row">
+          <span class="dual-tag dual-tag-conv">Convenios</span>
+          ${renderPriceBlock(row.PrecioConvenios)}
+        </div>
       </div>
     `;
   }
@@ -413,7 +458,8 @@ function renderTable(rows, st){
 
   if(rows.length === 0){
     const tr = document.createElement("tr");
-    tr.innerHTML = `<td colspan="3" class="empty">Sin resultados con esos filtros.</td>`;
+    tr.className = "empty-row";
+    tr.innerHTML = `<td colspan="3">Sin resultados con esos filtros.</td>`;
     tbody.appendChild(tr);
     return;
   }
@@ -426,7 +472,7 @@ function renderTable(rows, st){
     if(cat !== lastCat){
       const trCat = document.createElement("tr");
       trCat.className = "cat-row";
-      trCat.innerHTML = `<td colspan="3">${escapeHtml(cat)}</td>`;
+      trCat.innerHTML = `<td colspan="3"><span class="cat-chip"><span class="cat-chip-dot"></span>${escapeHtml(cat)}</span></td>`;
       tbody.appendChild(trCat);
       lastCat = cat;
     }
@@ -460,7 +506,7 @@ function renderGallery(rows, st){
   const mode = getActiveMode(st); // "nuevos" | "convenios"
   const list = (mode === "nuevos") ? (IMG.nuevos || []) : (IMG.convenios || []);
 
-  // Generales siempre primero
+  // Generales al final
   const general = (IMG.general || []).map(x => normalizeImgItem(x));
 
   const selectedCat = (st.selectedCat || "").trim();
@@ -478,7 +524,7 @@ function renderGallery(rows, st){
       return true;
     });
 
-  const cards = [...general, ...filteredByMode];
+  const cards = [...filteredByMode, ...general];
 
   if(cards.length === 0){
     empty.classList.remove("hidden");
@@ -518,29 +564,31 @@ function normalizeImgItem(x){
 ========================= */
 function initGalleryUi(){
   const wrap = qs("#galleryWrap");
+  const layout = qs("#contentLayout");
   const btn = qs("#btnToggleGaleria");
   const btnClose = qs("#btnCerrarGaleria");
+  const btnText = qs(".btn-galeria-text");
 
   if(btn && wrap){
     btn.addEventListener("click", () => {
       const isHidden = wrap.classList.contains("hidden");
       wrap.classList.toggle("hidden");
+      if(layout) layout.classList.toggle("gallery-open", isHidden);
 
       if(isHidden){
-        btn.textContent = "Ocultar galería";
+        if(btnText) btnText.textContent = "Ocultar galería";
         renderAll();
-        setTimeout(() => wrap.scrollIntoView({ behavior:"smooth", block:"start" }), 50);
       }else{
-        btn.textContent = "Galería (imágenes)";
+        if(btnText) btnText.textContent = "Ver galería";
       }
     });
   }
 
-  if(btnClose && wrap && btn){
+  if(btnClose && wrap){
     btnClose.addEventListener("click", () => {
       wrap.classList.add("hidden");
-      btn.textContent = "Galería (imágenes)";
-      setTimeout(() => window.scrollTo({ top: 0, behavior:"smooth" }), 50);
+      if(layout) layout.classList.remove("gallery-open");
+      if(btnText) btnText.textContent = "Ver galería";
     });
   }
 }
