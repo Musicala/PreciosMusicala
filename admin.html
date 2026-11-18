@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Administrar imágenes · Musicala</title>
+  <link rel="stylesheet" href="./styles.css"><link rel="stylesheet" href="./admin.css">
+</head>
+<body><main class="admin-shell">
+  <a href="./index.html">← Volver a precios</a>
+  <h1>Imágenes de Musicala</h1>
+  <p>Sube imágenes, cambia su información y ordénalas con las flechas. Los cambios guardados aparecen en la galería pública.</p>
+  <p id="status" role="status" aria-live="polite">Conectando…</p>
+  <button id="login" hidden>Entrar con Google</button>
+  <button id="logout" hidden>Cerrar sesión</button>
+  <section id="editor" hidden>
+    <form id="upload">
+      <h2>Subir imágenes</h2>
+      <label>Grupo <select id="group"><option value="general">Información general</option><option value="nuevos">Estudiantes nuevos</option><option value="convenios">Beneficios / Convenios</option></select></label>
+      <label>Categoría <input id="category" maxlength="150" placeholder="Ej.: Personalizado (vacío = todas)"></label>
+      <label>Imágenes <input id="files" type="file" accept="image/png,image/jpeg,image/webp" multiple required></label>
+      <p>PNG, JPG o WebP. Máximo 10 MB por imagen. Puedes seleccionar varias a la vez.</p>
+      <button type="submit">Subir y publicar</button>
+    </form>
+    <h2>Organizar galería</h2>
+    <p>Edita títulos y categorías, cambia el grupo o el orden y pulsa «Guardar organización».</p>
+    <button id="save">Guardar organización</button>
+    <div id="items"></div>
+  </section>
+</main><script type="module" src="./admin.js"></script></body></html>

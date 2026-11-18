@@ -1,35 +1,37 @@
-# Precios Musicala 2026 (Tabla + Galería local)
+# Precios Musicala 2026
 
-## 1) Qué cambió
-- El Sheet ya NO tiene "TipoEstudiante".
-- Ahora hay 2 columnas de precio:
-  - "Estudiantes Nuevos"
-  - "Beneficio/Convenios"
+Lista pública de precios conectada a Google Sheets, con filtros de categoría,
+tipo de estudiante, búsqueda, descuentos y galería de imágenes.
 
-## 2) Cómo funciona la galería
-La galería NO usa iframe.
-Lee un archivo `images.json` con rutas locales a imágenes.
+- Sitio: https://musicala.github.io/PreciosMusicala/
+- Administrador: https://musicala.github.io/PreciosMusicala/admin.html
+- Pagos en RIP: https://musicala.github.io/RIP2026/registrar-pagos.html
 
-Carpetas:
-- /gallery/general     -> SIEMPRE salen primero
-- /gallery/nuevos      -> imágenes por servicio para Estudiantes nuevos
-- /gallery/convenios   -> imágenes por servicio para Beneficios/Convenios
+## Administrar imágenes
 
-## 3) Cómo nombrar servicios (clave)
-En `images.json` las llaves son el *slug* del nombre del Servicio:
-- Convierte a minúscula
-- Quita tildes
-- Espacios -> guiones
-Ej: "Beneficios Clases virtuales" -> "beneficios-clases-virtuales"
+Entra con Google como `alekcaballeromusic@gmail.com` o
+`catalina.medina.leal@gmail.com`. Puedes subir varios archivos, cambiar títulos,
+categorías y grupos, y ordenar con flechas. Los cambios guardados se publican
+en la galería sin editar archivos ni volver a desplegar GitHub Pages.
 
-## 4) Editar images.json
-Ejemplo:
-{
-  "general": ["./gallery/general/intro-1.png"],
-  "nuevos": { "clases-virtuales": "./gallery/nuevos/clases-virtuales.png" },
-  "convenios": { "clases-virtuales": "./gallery/convenios/clases-virtuales.png" }
-}
+Firebase usa el proyecto existente `rip-musicala`. Solo las imágenes y su catálogo
+son públicos; pagos, estudiantes y auditoría conservan sus permisos internos.
+Consulta [ACTIVACION.md](./ACTIVACION.md) para operación y mantenimiento.
 
-## 5) Default
-- "Estudiantes nuevos" viene marcado por defecto.
-- "Beneficios / Convenios" está apagado por defecto.
+## Datos y respaldo
+
+Los precios proceden de las columnas «Categoría», «Servicio», «Estudiantes Nuevos»
+y «Beneficio/Convenios» de la hoja publicada configurada en `app.js`.
+
+La galería usa `gallery/manifest` en Firestore y archivos en Firebase Storage.
+`images.json` y las carpetas `gallery/general`, `gallery/nuevos` y
+`gallery/convenios` conservan el catálogo original como respaldo.
+
+Cada grupo contiene una lista ordenada de objetos con `src`, `title`, `categoria`,
+`servicioSlug` y `meta` opcionales. `servicioSlug` permite filtrar por servicio
+(por ejemplo, «Clases virtuales» se convierte en `clases-virtuales`).
+Las imágenes generales aparecen al final. Si seleccionas ambos tipos de estudiante,
+se muestran ambos grupos y las imágenes compartidas aparecen una sola vez.
+
+Para probar localmente, sirve el directorio por HTTP y autoriza el dominio de prueba
+en Firebase Authentication. Los módulos no se ejecutan desde una URL `file://`.

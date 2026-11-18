@@ -31,6 +31,12 @@ let SELECTED_DISCOUNT = 0;
 
 const qs = (s) => document.querySelector(s);
 
+let CLOUD_IMG = null;
+window.addEventListener('gallery-updated', event => {
+  CLOUD_IMG = event.detail;
+  IMG = CLOUD_IMG;
+  renderAll();
+});
 boot();
 initGalleryUi();
 bindEvents();
@@ -41,7 +47,8 @@ bindEvents();
 async function boot(){
   try{
     // 1) Cargar images.json
-    IMG = await loadImagesJson();
+    const localImages = await loadImagesJson();
+    IMG = CLOUD_IMG || localImages;
 
     // 2) Cargar TSV
     const res = await fetch(TSV_URL, { cache: "no-store" });
@@ -173,7 +180,7 @@ function updateMetaInfo(){
     : "";
 
   meta.textContent =
-    `Cargadas ${DATA.length} filas. cat=${COLS.cat} · serv=${COLS.serv} · nuevos=${COLS.pNuevos} · convenios=${COLS.pConv}${extra}`;
+    `${DATA.length} servicios disponibles${SELECTED_DISCOUNT > 0 ? ` · Descuento del ${SELECTED_DISCOUNT}%` : ""}`;
 }
 
 function populateCategories(){
@@ -503,8 +510,10 @@ function renderGallery(rows, st){
   grid.innerHTML = "";
   empty.classList.add("hidden");
 
-  const mode = getActiveMode(st); // "nuevos" | "convenios"
-  const list = (mode === "nuevos") ? (IMG.nuevos || []) : (IMG.convenios || []);
+  const list = [
+    ...(st.showNuevos ? IMG.nuevos || [] : []),
+    ...(st.showConvenios ? IMG.convenios || [] : [])
+  ];
 
   // Generales al final
   const general = (IMG.general || []).map(x => normalizeImgItem(x));
@@ -524,7 +533,8 @@ function renderGallery(rows, st){
       return true;
     });
 
-  const cards = [...filteredByMode, ...general];
+  const cards = [...filteredByMode, ...general].filter((item, index, all) =>
+    item.src && all.findIndex(other => other.src === item.src) === index);
 
   if(cards.length === 0){
     empty.classList.remove("hidden");

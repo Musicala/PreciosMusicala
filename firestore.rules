@@ -1,0 +1,141 @@
+rules_version = '2';
+
+// Reglas de rip-musicala.
+//
+// Modelo de acceso: RIP es una herramienta interna operada exclusivamente
+// por el personal del allowlist (4 correos). No hay acceso de estudiantes,
+// docentes externos. La única lectura pública es gallery/manifest.
+//
+// Decisión documentada (integración studentId, 2026-07):
+// - La inmutabilidad de studentId se aplica en las FRONTERAS del ecosistema:
+//   * bitacoras-de-clase/firestore.rules bloquea cambios de studentId y del
+//     mapa `rip` desde cualquier cliente;
+//   * las Cloud Functions (syncStudentIdentity / syncStudentStatus) solo
+//     escriben los campos de su propiedad.
+// - Dentro de RIP, durante la transición, el personal SÍ necesita reescribir
+//   studentId en registros (fusión de estudiantes homónimos y upgrade de
+//   nameKey → studentId canónico). Endurecer eso aquí rompería la migración;
+//   se revisará al cerrarla (ver ARCHITECTURE.md / MIGRATION.md en el repo
+//   de Bitácoras).
+// - Toda escritura queda auditada en `auditLog` por la propia app.
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isAllowed() {
+      return request.auth != null
+        && request.auth.token.email in [
+          "catalina.medina.leal@gmail.com",
+          "alekcaballeromusic@gmail.com",
+          "adminmusicala@gmail.com",
+          "musicalaasesor@gmail.com"
+        ];
+    }
+
+    function isAuditAdmin() {
+      return request.auth != null
+        && request.auth.token.email in [
+          "catalina.medina.leal@gmail.com",
+          "alekcaballeromusic@gmail.com"
+        ];
+    }
+
+    // La bitácora es inmutable desde el navegador.
+    // Administración puede leer todos los eventos.
+    // El resto del equipo solo puede leer los propios.
+    match /auditLog/{auditId} {
+      allow create: if isAllowed()
+        && request.resource.data.userEmail == request.auth.token.email;
+
+      allow read: if isAuditAdmin()
+        || (isAllowed()
+          && resource.data.userEmail == request.auth.token.email);
+
+      allow update, delete: if false;
+    }
+
+    // Permiso docente replicado exclusivamente por el backend de Docentes Hub.
+    function isHubTeacher() {
+      let email = request.auth.token.email.lower();
+      let access = get(
+        /databases/$(database)/documents/hubStaffAccess/$(email)
+      ).data;
+
+      return request.auth.token.email_verified == true
+        && access.enabled == true
+        && (
+          access.accessExpiresAt == 0
+          || request.time.toMillis() <= access.accessExpiresAt
+        );
+    }
+
+    match /registro/{registroId} {
+      allow read: if request.auth != null && isHubTeacher();
+    }
+
+    match /hubStaffAccess/{email} {
+      allow read: if isAllowed()
+        || (request.auth != null
+          && request.auth.token.email.lower() == email);
+
+      allow write: if false;
+    }
+
+    function editor() {
+      return request.auth != null && request.auth.token.email_verified == true
+        && request.auth.token.firebase.sign_in_provider == 'google.com'
+        && request.auth.token.email in ['alekcaballeromusic@gmail.com', 'catalina.medina.leal@gmail.com'];
+    }
+    match /gallery/manifest {
+      allow read: if true;
+      allow create, update: if editor()
+        && request.resource.data.keys().hasOnly(['general','nuevos','convenios','revision'])
+        && request.resource.data.general is list && request.resource.data.nuevos is list
+        && request.resource.data.convenios is list && request.resource.data.revision is int;
+    }
+
+    // Colecciones internas autorizadas.
+    match /{collection}/{document} {
+      allow read, write: if isAllowed()
+        && collection in [
+          'registro',
+          'students',
+          'programacion',
+          'studentComputed',
+          'clientesB2C',
+          'primeraVez',
+          'maintenanceRepairs',
+          'wixStudentEmails',
+          'users',
+          'wixPlanMappings',
+          'wixServiceMappings',
+          'wixClassChecks'
+        ];
+    }
+
+    // Configuración de tarifas y jornadas docentes.
+    // Solo el personal autorizado puede consultar,
+    // crear y actualizar estos documentos.
+    match /configuracion/tarifas_docentes {
+      allow get, create, update: if isAllowed();
+    }
+
+    match /configuracion/jornadas_docentes {
+      allow get, create, update: if isAllowed();
+    }
+
+    // Las altas se validan y auditan mediante las funciones de Spaces.
+    match /spacesClients/{id} {
+      allow read: if isAllowed();
+    }
+
+    match /spacesRegistro/{id} {
+      allow read: if isAllowed();
+    }
+
+    // Subcolecciones internas.
+    match /{collection}/{document}/{subcollection}/{subdocument} {
+      allow read, write: if isAllowed();
+    }
+  }
+}
