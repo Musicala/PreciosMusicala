@@ -5,7 +5,7 @@ tipo de estudiante, búsqueda, descuentos y galería de imágenes.
 
 - Sitio: https://musicala.github.io/PreciosMusicala/
 - Administrador: https://musicala.github.io/PreciosMusicala/admin.html
-- Pagos en RIP: https://musicala.github.io/RIP2026/registrar-pagos.html
+- Pagos en RIP: https://rip-musicala.web.app/registrar-pagos.html
 
 ## Administrar imágenes
 

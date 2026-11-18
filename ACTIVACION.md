@@ -29,7 +29,7 @@ publicó cambios antes, recarga la página para revisar su versión antes de gua
 
 ## Precios y pagos
 
-**Registro de pagos** abre https://musicala.github.io/RIP2026/registrar-pagos.html.
+**Registro de pagos** abre https://rip-musicala.web.app/registrar-pagos.html.
 El formulario y la página pública consultan la misma hoja de precios. RIP sugiere
 la tarifa del tipo de estudiante elegido y conserva la referencia junto al pago.
 
